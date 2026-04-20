@@ -231,6 +231,8 @@
 #define MSP_SET_BEEPER_CONFIG                185
 #define MSP_SET_TX_INFO                      186
 #define MSP_TX_INFO                          187
+#define MSP_SET_OSD_CANVAS                   188
+#define MSP_OSD_CANVAS                       189
 
 #define MSP_MIXER_OVERRIDE                   190
 #define MSP_SET_MIXER_OVERRIDE               191

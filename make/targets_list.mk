@@ -24,6 +24,7 @@ UNIFIED_TARGETS := \
 
 # Legacy targets are targets that have been replaced by Unified Target configurations
 LEGACY_TARGETS := \
+    ATOMRCF405 \
     DEVEBOXH743 \
     MATEKF405 \
     MATEKF411 \
@@ -33,6 +34,7 @@ LEGACY_TARGETS := \
     NUCLEOH743 \
 
 CI_TARGETS := $(UNIFIED_TARGETS) \
+    ATOMRCF405 \
     MATEKF405 \
     MATEKF411 \
     MATEKF722 \

@@ -914,6 +914,7 @@ static bool mspCommonProcessOutCommand(int16_t cmdMSP, sbuf_t *dst, mspPostProce
 #define OSD_FLAGS_OSD_HARDWARE_FRSKYOSD (1 << 3)
 #define OSD_FLAGS_OSD_HARDWARE_MAX_7456 (1 << 4)
 #define OSD_FLAGS_OSD_DEVICE_DETECTED   (1 << 5)
+#define OSD_FLAGS_OSD_DEVICE_MSP        (1 << 6)
 
         uint8_t osdFlags = 0;
 #if defined(USE_OSD)
@@ -936,6 +937,9 @@ static bool mspCommonProcessOutCommand(int16_t cmdMSP, sbuf_t *dst, mspPostProce
                 osdFlags |= OSD_FLAGS_OSD_DEVICE_DETECTED;
             }
 
+            break;
+        case OSD_DISPLAYPORT_DEVICE_MSP:
+            osdFlags |= OSD_FLAGS_OSD_DEVICE_MSP;
             break;
         default:
             break;
@@ -2072,6 +2076,17 @@ static bool mspProcessOutCommand(int16_t cmdMSP, sbuf_t *dst)
         sbufWriteU8(dst, rtcDateTimeIsSet);
 
         break;
+
+    case MSP_OSD_CANVAS:
+#ifdef USE_MAX7456
+        sbufWriteU8(dst, 30);
+        sbufWriteU8(dst, (vcdProfile()->video_system == VIDEO_SYSTEM_NTSC) ? 13 : 16);
+#else
+        sbufWriteU8(dst, 30);
+        sbufWriteU8(dst, 16);
+#endif
+        break;
+
 #ifdef USE_RTC_TIME
     case MSP_RTC:
         {
@@ -3721,6 +3736,15 @@ static mspResult_e mspProcessInCommand(mspDescriptor_t srcDesc, int16_t cmdMSP, 
     case MSP_SET_TX_INFO:
         setRssiMsp(sbufReadU8(src));
 
+        break;
+
+    case MSP_SET_OSD_CANVAS:
+        // Reserved for HD canvas-capable OSD backends.
+        // Consume payload for configurator compatibility.
+        if (sbufBytesRemaining(src) >= 2) {
+            sbufReadU8(src);
+            sbufReadU8(src);
+        }
         break;
 
 #if defined(USE_BOARD_INFO)
