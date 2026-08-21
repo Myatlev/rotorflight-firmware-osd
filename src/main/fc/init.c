@@ -170,6 +170,9 @@
 #include "sensors/initialisation.h"
 
 #include "telemetry/telemetry.h"
+#ifdef USE_SPORT_MASTER
+#include "telemetry/sport_master.h"
+#endif
 
 #ifdef USE_HARDWARE_REVISION_DETECTION
 #include "hardware_revision.h"
@@ -237,7 +240,7 @@ static void configureSPIAndQuadSPI(void)
 }
 
 #ifdef USE_SDCARD
-static void sdCardAndFSInit()
+static void sdCardAndFSInit(void)
 {
     sdcard_init(sdcardConfig());
     afatfs_init();
@@ -976,6 +979,11 @@ void init(void)
     if (featureIsEnabled(FEATURE_TELEMETRY)) {
         telemetryInit();
     }
+#endif
+
+#ifdef USE_SPORT_MASTER
+    // Allow SPORT master transport for non-telemetry use-cases (e.g. ESC sensor bridge).
+    initSportMaster();
 #endif
 
     setArmingDisabled(ARMING_DISABLED_BOOT_GRACE_TIME);

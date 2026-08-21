@@ -15,31 +15,17 @@
  * along with this software. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "platform.h"
+#pragma once
 
-#if defined(USE_FREQ_SENSOR)
+#include <stdbool.h>
+#include <stdint.h>
 
-#include "drivers/io.h"
-#include "drivers/nvic.h"
-#include "drivers/timer.h"
-#include "drivers/freq.h"
+void smartFuelInit(void);
+void smartFuelUpdate(void);
 
-#include "pg/pg.h"
-#include "pg/pg_ids.h"
+void validateAndFixSmartFuelConfig(void);
 
-#include "freq.h"
+bool smartFuelIsEnabled(void);
 
-PG_REGISTER_WITH_RESET_FN(freqConfig_t, freqConfig, PG_FREQ_SENSOR_CONFIG, 0);
-
-void pgResetFn_freqConfig(freqConfig_t *freqConfig)
-{
-    for (unsigned index = 0; index < FREQ_SENSOR_PORT_COUNT; index++) {
-        freqConfig->ioTag[index] = timerioTagGetByUsage(TIM_USE_FREQ, index);
-    }
-
-    freqConfig->pullupdn = FREQ_INPUT_PULLUP;
-    freqConfig->polarity = FREQ_INPUT_FALLING_EDGE;
-    freqConfig->minhz = FREQ_INPUT_MINHZ_DEFAULT;
-}
-
-#endif
+uint8_t smartFuelChargeLevel(void);
+float smartFuelChargeLevelf(void);

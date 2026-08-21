@@ -45,7 +45,7 @@
 #define PWM_PULSE_MAX           2250      // maximum PWM pulse width which is considered valid
 
 #define PWM_SERVO_PULSE_MIN     50        // minimum PWM servo output pulse width allowed
-#define PWM_SERVO_PULSE_MAX     2250      // maximum PWM servo output pulse width allowed
+#define PWM_SERVO_PULSE_MAX     2500      // maximum PWM servo output pulse width allowed
 
 #define RXFAIL_PULSE_MIN        875
 #define RXFAIL_PULSE_MAX        2150
@@ -181,7 +181,7 @@ extern linkQualitySource_e linkQualitySource;
 extern rxRuntimeState_t rxRuntimeState; //!!TODO remove this extern, only needed once for channelCount
 
 void rxInit(void);
-void validateAndFixRxConfig();
+void validateAndFixRxConfig(void);
 void rxProcessPending(bool state);
 bool rxUpdateCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs);
 void rxFrameCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs);

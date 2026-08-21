@@ -15,31 +15,6 @@
  * along with this software. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "platform.h"
+#define MSP2_GET_SMARTFUEL_CONFIG           0x4000
+#define MSP2_SET_SMARTFUEL_CONFIG           0x4001
 
-#if defined(USE_FREQ_SENSOR)
-
-#include "drivers/io.h"
-#include "drivers/nvic.h"
-#include "drivers/timer.h"
-#include "drivers/freq.h"
-
-#include "pg/pg.h"
-#include "pg/pg_ids.h"
-
-#include "freq.h"
-
-PG_REGISTER_WITH_RESET_FN(freqConfig_t, freqConfig, PG_FREQ_SENSOR_CONFIG, 0);
-
-void pgResetFn_freqConfig(freqConfig_t *freqConfig)
-{
-    for (unsigned index = 0; index < FREQ_SENSOR_PORT_COUNT; index++) {
-        freqConfig->ioTag[index] = timerioTagGetByUsage(TIM_USE_FREQ, index);
-    }
-
-    freqConfig->pullupdn = FREQ_INPUT_PULLUP;
-    freqConfig->polarity = FREQ_INPUT_FALLING_EDGE;
-    freqConfig->minhz = FREQ_INPUT_MINHZ_DEFAULT;
-}
-
-#endif

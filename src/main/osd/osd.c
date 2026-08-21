@@ -1099,7 +1099,7 @@ void osdProcessStats2(timeUs_t currentTimeUs)
 #endif
 }
 
-void osdProcessStats3()
+void osdProcessStats3(void)
 {
 #if defined(USE_ACC)
     if (sensors(SENSOR_ACC)
