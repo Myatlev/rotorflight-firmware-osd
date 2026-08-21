@@ -1897,4 +1897,32 @@ void gpsSetFixState(bool state)
         DISABLE_STATE(GPS_FIX);
     }
 }
+#else
+
+#include "io/gps.h"
+
+char gpsPacketLog[GPS_PACKET_LOG_ENTRY_COUNT];
+
+int32_t GPS_home[2];
+uint16_t GPS_distanceToHome;
+int16_t GPS_directionToHome;
+uint32_t GPS_distanceFlownInCm;
+int16_t GPS_verticalSpeedInCmS;
+int16_t GPS_angle[ANGLE_INDEX_COUNT];
+float dTnav;
+float GPS_scaleLonDown;
+int16_t nav_takeoff_bearing;
+
+gpsData_t gpsData;
+gpsSolutionData_t gpsSol;
+
+uint8_t GPS_update;
+uint32_t GPS_packetCount;
+uint32_t GPS_svInfoReceivedCount;
+uint8_t GPS_numCh;
+uint8_t GPS_svinfo_chn[GPS_SV_MAXSATS_M8N];
+uint8_t GPS_svinfo_svid[GPS_SV_MAXSATS_M8N];
+uint8_t GPS_svinfo_quality[GPS_SV_MAXSATS_M8N];
+uint8_t GPS_svinfo_cno[GPS_SV_MAXSATS_M8N];
+
 #endif

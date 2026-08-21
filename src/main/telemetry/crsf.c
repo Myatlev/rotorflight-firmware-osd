@@ -340,6 +340,7 @@ bool handleCrsfMspFrameBuffer(mspResponseFnPtr responseFn)
  * uint16      Altitude ( meter ­1000m offset )
  * uint8_t     Satellites in use ( counter )
  */
+#ifdef USE_GPS
 static void crsfFrameGps(sbuf_t *dst)
 {
     sbufWriteU8(dst, CRSF_FRAMETYPE_GPS);
@@ -350,6 +351,7 @@ static void crsfFrameGps(sbuf_t *dst)
     sbufWriteU16BE(dst, getEstimatedAltitudeCm() / 100 + 1000);
     sbufWriteU8(dst, gpsSol.numSat);
 }
+#endif
 
 /*
  * 0x07 Variometer sensor

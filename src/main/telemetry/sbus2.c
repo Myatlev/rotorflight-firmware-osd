@@ -81,7 +81,6 @@ void handleSbus2Telemetry(timeUs_t currentTimeUs)
 
     float voltage = getBatteryVoltage() * 0.01f;
     float cellVoltage =  getBatteryAverageCellVoltage() * 0.01f;
-    escSensorData_t *escData = getEscSensorData(ESC_SENSOR_COMBINED);
     float current =  getBatteryCurrent() * 0.01f;
     float capacity = getBatteryCapacityUsed();
     float temperature =  getCoreTemperatureCelsius();
@@ -96,10 +95,14 @@ void handleSbus2Telemetry(timeUs_t currentTimeUs)
     // 1 slot - esc temp
     send_SBS01T(7, temperature);
 
+#ifdef USE_ESC_SENSOR
+    escSensorData_t *escData = getEscSensorData(ESC_SENSOR_COMBINED);
+
     if (escData != NULL) {
         // 8 slots, esc
         send_kontronik(8,  escData->voltage * 0.1f, escData->consumption * 100, rpm, escData->current * 0.01f, escData->temperature * 0.1f, escData->temperature2 * 0.1f, escData->bec_current * 10, escData->pwm * 0.1f);
     }
+#endif
 }
 
 uint8_t sbus2GetTelemetrySlot(timeUs_t elapsed)
