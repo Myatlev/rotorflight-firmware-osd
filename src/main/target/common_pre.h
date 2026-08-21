@@ -289,6 +289,7 @@ extern uint8_t _dmaram_end__;
 #define USE_MSP_DISPLAYPORT
 #define USE_MSP_OVER_TELEMETRY
 #define USE_OSD_OVER_MSP_DISPLAYPORT
+#define USE_OSD_HD
 #define USE_LED_STRIP
 #endif
 

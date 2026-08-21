@@ -507,7 +507,11 @@ void mspSerialProcess(mspEvaluateNonMspData_e evaluateNonMspData, mspProcessComm
                 const uint8_t c = serialRead(mspPort->port);
                 const bool consumed = mspSerialProcessReceivedData(mspPort, c);
 
-                if (!consumed && evaluateNonMspData == MSP_EVALUATE_NON_MSP_DATA) {
+                if (!consumed && evaluateNonMspData == MSP_EVALUATE_NON_MSP_DATA
+#ifdef USE_MSP_DISPLAYPORT
+                       && (mspPort->port->identifier != displayPortMspGetSerial())
+#endif
+                       ) {
                     mspEvaluateNonMspData(mspPort, c);
                 }
 

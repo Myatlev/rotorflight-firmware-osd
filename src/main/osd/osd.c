@@ -393,6 +393,14 @@ void pgResetFn_osdConfig(osdConfig_t *osdConfig)
     osdConfig->stat_show_cell_value = false;
     osdConfig->framerate_hz = OSD_FRAMERATE_DEFAULT_HZ;
     osdConfig->cms_background_type = DISPLAY_BACKGROUND_TRANSPARENT;
+
+#ifdef USE_OSD_HD
+    osdConfig->canvas_cols = OSD_HD_COLS;
+    osdConfig->canvas_rows = OSD_HD_ROWS;
+#else
+    osdConfig->canvas_cols = OSD_SD_COLS;
+    osdConfig->canvas_rows = OSD_SD_ROWS;
+#endif
 }
 
 void pgResetFn_osdElementConfig(osdElementConfig_t *osdElementConfig)

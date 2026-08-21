@@ -49,6 +49,15 @@ int displayScreenSize(const displayPort_t *instance)
     return instance->vTable->screenSize(instance);
 }
 
+int displaySys(displayPort_t *instance, uint8_t x, uint8_t y, displayPortSystemElement_e systemElement)
+{
+    if (instance->vTable->writeSys) {
+        return instance->vTable->writeSys(instance, x, y, systemElement);
+    }
+
+    return 0;
+}
+
 void displayGrab(displayPort_t *instance)
 {
     instance->vTable->grab(instance);

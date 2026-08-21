@@ -230,6 +230,10 @@ static uint32_t blinkBits[(OSD_ITEM_COUNT + 31) / 32];
 #define IS_BLINK(item) (blinkBits[(item) / 32] & (1 << ((item) % 32)))
 #define BLINK(item) (IS_BLINK(item) && blinkState)
 
+#ifdef USE_MSP_DISPLAYPORT
+#define IS_SYS_OSD_ELEMENT(item) ((item) >= OSD_SYS_GOGGLE_VOLTAGE && (item) <= OSD_SYS_FAN_SPEED)
+#endif
+
 enum {UP, DOWN};
 
 static int osdDisplayWrite(osdElementParms_t *element, uint8_t x, uint8_t y, uint8_t attr, const char *s)
@@ -1412,6 +1416,15 @@ static void osdElementWarnings(osdElementParms_t *element)
     }
 }
 
+#ifdef USE_MSP_DISPLAYPORT
+static void osdElementSys(osdElementParms_t *element)
+{
+    UNUSED(element);
+
+    // Nothing to render for a system element - the VTX/goggles render it
+}
+#endif
+
 // Define the order in which the elements are drawn.
 // Elements positioned later in the list will overlay the earlier
 // ones if their character positions overlap
@@ -1492,6 +1505,19 @@ static const uint8_t osdElementDisplayOrder[] = {
     OSD_CAMERA_FRAME,
 #ifdef USE_PERSISTENT_STATS
     OSD_TOTAL_FLIGHTS,
+#endif
+#ifdef USE_MSP_DISPLAYPORT
+    OSD_SYS_GOGGLE_VOLTAGE,
+    OSD_SYS_VTX_VOLTAGE,
+    OSD_SYS_BITRATE,
+    OSD_SYS_DELAY,
+    OSD_SYS_DISTANCE,
+    OSD_SYS_LQ,
+    OSD_SYS_GOGGLE_DVR,
+    OSD_SYS_VTX_DVR,
+    OSD_SYS_WARNINGS,
+    OSD_SYS_VTX_TEMP,
+    OSD_SYS_FAN_SPEED,
 #endif
 };
 
@@ -1606,6 +1632,19 @@ const osdElementDrawFn osdElementDrawFunction[OSD_ITEM_COUNT] = {
 #ifdef USE_PERSISTENT_STATS
     [OSD_TOTAL_FLIGHTS]           = osdElementTotalFlights,
 #endif
+#ifdef USE_MSP_DISPLAYPORT
+    [OSD_SYS_GOGGLE_VOLTAGE]      = osdElementSys,
+    [OSD_SYS_VTX_VOLTAGE]         = osdElementSys,
+    [OSD_SYS_BITRATE]             = osdElementSys,
+    [OSD_SYS_DELAY]               = osdElementSys,
+    [OSD_SYS_DISTANCE]            = osdElementSys,
+    [OSD_SYS_LQ]                  = osdElementSys,
+    [OSD_SYS_GOGGLE_DVR]          = osdElementSys,
+    [OSD_SYS_VTX_DVR]             = osdElementSys,
+    [OSD_SYS_WARNINGS]            = osdElementSys,
+    [OSD_SYS_VTX_TEMP]            = osdElementSys,
+    [OSD_SYS_FAN_SPEED]           = osdElementSys,
+#endif
 };
 
 // Define the mapping between the OSD element id and the function to draw its background (static part)
@@ -1703,9 +1742,16 @@ static void osdDrawSingleElement(displayPort_t *osdDisplayPort, uint8_t item)
     element.attr = DISPLAYPORT_ATTR_NONE;
 
     // Call the element drawing function
-    osdElementDrawFunction[item](&element);
-    if (element.drawElement) {
-        osdDisplayWrite(&element, elemPosX, elemPosY, element.attr, buff);
+#ifdef USE_MSP_DISPLAYPORT
+    if (IS_SYS_OSD_ELEMENT(item)) {
+        displaySys(osdDisplayPort, elemPosX, elemPosY, (displayPortSystemElement_e)(item - OSD_SYS_GOGGLE_VOLTAGE + DISPLAYPORT_SYS_GOGGLE_VOLTAGE));
+    } else
+#endif
+    {
+        osdElementDrawFunction[item](&element);
+        if (element.drawElement) {
+            osdDisplayWrite(&element, elemPosX, elemPosY, element.attr, buff);
+        }
     }
 }
 

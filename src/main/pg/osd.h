@@ -31,7 +31,7 @@
 #define OSD_PROFILE_NAME_LENGTH     6
 #define OSD_RCCHANNELS_COUNT        4
 #define OSD_TIMER_COUNT             2
-#define OSD_ITEM_COUNT              61
+#define OSD_ITEM_COUNT              72
 
 #ifdef USE_OSD
 
@@ -66,6 +66,8 @@ typedef struct osdConfig_s {
     uint16_t    framerate_hz;
     uint8_t     cms_background_type;                // For supporting devices, determines whether the CMS background is transparent or opaque
     uint8_t     stat_show_cell_value;
+    uint8_t     canvas_cols;
+    uint8_t     canvas_rows;
 } osdConfig_t;
 
 PG_DECLARE(osdConfig_t, osdConfig);

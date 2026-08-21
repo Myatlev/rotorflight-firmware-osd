@@ -114,6 +114,8 @@
 #include "osd/osd_elements.h"
 #include "osd/osd_warnings.h"
 
+#include "pg/displayport_profiles.h"
+
 #include "pg/beeper.h"
 #include "pg/board.h"
 #include "pg/dyn_notch.h"
@@ -1017,6 +1019,11 @@ static bool mspCommonProcessOutCommand(int16_t cmdMSP, sbuf_t *dst, mspPostProce
         sbufWriteU8(dst, osdConfig()->camera_frame_width);
         sbufWriteU8(dst, osdConfig()->camera_frame_height);
 
+#if defined(USE_MSP_DISPLAYPORT)
+        sbufWriteU8(dst, osdConfig()->displayPortDevice);
+        sbufWriteU8(dst, displayPortProfileMsp()->displayPortSerial);
+#endif
+
 #endif // USE_OSD
         break;
     }
@@ -1155,10 +1162,12 @@ static bool mspProcessOutCommand(int16_t cmdMSP, sbuf_t *dst)
 
     case MSP_FLIGHT_STATS:
         // Introduced in MSP API 12.9
+#ifdef USE_PERSISTENT_STATS
         sbufWriteU32(dst, statsConfig()->stats_total_flights);
         sbufWriteU32(dst, statsConfig()->stats_total_time_s);
         sbufWriteU32(dst, statsConfig()->stats_total_dist_m);
         sbufWriteS8(dst, statsConfig()->stats_min_armed_time_s);
+#endif
         break;
 
 #ifdef USE_SERVOS
@@ -2078,9 +2087,9 @@ static bool mspProcessOutCommand(int16_t cmdMSP, sbuf_t *dst)
         break;
 
     case MSP_OSD_CANVAS:
-#ifdef USE_MAX7456
-        sbufWriteU8(dst, 30);
-        sbufWriteU8(dst, (vcdProfile()->video_system == VIDEO_SYSTEM_NTSC) ? 13 : 16);
+#ifdef USE_OSD
+        sbufWriteU8(dst, osdConfig()->canvas_cols);
+        sbufWriteU8(dst, osdConfig()->canvas_rows);
 #else
         sbufWriteU8(dst, 30);
         sbufWriteU8(dst, 16);
@@ -3712,10 +3721,12 @@ static mspResult_e mspProcessInCommand(mspDescriptor_t srcDesc, int16_t cmdMSP, 
 
     case MSP_SET_FLIGHT_STATS:
         // Introduced in MSP API 12.9
+#ifdef USE_PERSISTENT_STATS
         statsConfigMutable()->stats_total_flights = sbufReadU32(src);
         statsConfigMutable()->stats_total_time_s = sbufReadU32(src);
         statsConfigMutable()->stats_total_dist_m = sbufReadU32(src);
         statsConfigMutable()->stats_min_armed_time_s = sbufReadS8(src);
+#endif
         break;
 
 #ifdef USE_RTC_TIME
@@ -3739,13 +3750,29 @@ static mspResult_e mspProcessInCommand(mspDescriptor_t srcDesc, int16_t cmdMSP, 
         break;
 
     case MSP_SET_OSD_CANVAS:
-        // Reserved for HD canvas-capable OSD backends.
-        // Consume payload for configurator compatibility.
+#ifdef USE_OSD_HD
+        {
+            osdConfigMutable()->canvas_cols = sbufReadU8(src);
+            osdConfigMutable()->canvas_rows = sbufReadU8(src);
+
+            if ((vcdProfile()->video_system != VIDEO_SYSTEM_HD) ||
+                (osdConfig()->displayPortDevice != OSD_DISPLAYPORT_DEVICE_MSP)) {
+                // An HD VTX has communicated its canvas size, so we must be in HD mode
+                vcdProfileMutable()->video_system = VIDEO_SYSTEM_HD;
+                osdConfigMutable()->displayPortDevice = OSD_DISPLAYPORT_DEVICE_MSP;
+
+                writeEEPROM();
+                systemReset(RESET_NONE);
+            }
+        }
+        break;
+#else
         if (sbufBytesRemaining(src) >= 2) {
             sbufReadU8(src);
             sbufReadU8(src);
         }
         break;
+#endif
 
 #if defined(USE_BOARD_INFO)
     case MSP_SET_BOARD_INFO:
@@ -3979,6 +4006,13 @@ static mspResult_e mspCommonProcessInCommand(mspDescriptor_t srcDesc, int16_t cm
                     osdConfigMutable()->camera_frame_width = sbufReadU8(src);
                     osdConfigMutable()->camera_frame_height = sbufReadU8(src);
                 }
+
+#if defined(USE_MSP_DISPLAYPORT)
+                if (sbufBytesRemaining(src) >= 2) {
+                    osdConfigMutable()->displayPortDevice = sbufReadU8(src);
+                    displayPortProfileMspMutable()->displayPortSerial = sbufReadU8(src);
+                }
+#endif
 #endif
             } else if ((int8_t)addr == -2) {
 #if defined(USE_OSD)

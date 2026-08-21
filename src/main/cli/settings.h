@@ -89,7 +89,7 @@ typedef enum {
 #ifdef USE_MULTI_GYRO
     TABLE_GYRO,
 #endif
-#if defined(USE_MAX7456) || defined(USE_FRSKYOSD)
+#if defined(USE_MAX7456) || defined(USE_FRSKYOSD) || defined(USE_MSP_DISPLAYPORT)
     TABLE_VIDEO_SYSTEM,
 #endif
 #ifdef USE_VTX_COMMON

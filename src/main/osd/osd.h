@@ -78,6 +78,13 @@ extern const char * const osdTimerSourceNames[OSD_NUM_TIMER_TYPES];
 #define OSD_Y(x)      ((x >> OSD_POSITION_BITS) & OSD_POSITION_XY_MASK)
 #define OSD_TYPE(x)   ((x & OSD_TYPE_MASK) >> 14)
 
+#define OSD_SD_COLS 30
+#define OSD_SD_ROWS 16
+
+// Default HD OSD canvas size unless the goggles announce otherwise
+#define OSD_HD_COLS 53
+#define OSD_HD_ROWS 20
+
 // Timer configuration
 // Stored as 15[alarm:8][precision:4][source:4]0
 #define OSD_TIMER(src, prec, alarm) ((src & 0x0F) | ((prec & 0x0F) << 4) | ((alarm & 0xFF ) << 8))
@@ -159,6 +166,17 @@ typedef enum {
     OSD_TOTAL_FLIGHTS,
     OSD_UP_DOWN_REFERENCE,
     OSD_TX_UPLINK_POWER,
+    OSD_SYS_GOGGLE_VOLTAGE,
+    OSD_SYS_VTX_VOLTAGE,
+    OSD_SYS_BITRATE,
+    OSD_SYS_DELAY,
+    OSD_SYS_DISTANCE,
+    OSD_SYS_LQ,
+    OSD_SYS_GOGGLE_DVR,
+    OSD_SYS_VTX_DVR,
+    OSD_SYS_WARNINGS,
+    OSD_SYS_VTX_TEMP,
+    OSD_SYS_FAN_SPEED,
     OSD_ITEM_ENUM_COUNT // MUST BE LAST
 } osd_items_e;
 
