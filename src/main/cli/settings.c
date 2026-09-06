@@ -368,7 +368,7 @@ const char * const lookupTableRescueAltitudeMode[] = {
 
 #if defined(USE_MAX7456) || defined(USE_FRSKYOSD) || defined(USE_MSP_DISPLAYPORT)
 static const char * const lookupTableVideoSystem[] = {
-    "AUTO", "PAL", "NTSC"
+    "AUTO", "PAL", "NTSC", "HD"
 };
 #endif
 
