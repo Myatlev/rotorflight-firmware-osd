@@ -43,6 +43,40 @@
 
 PG_REGISTER_ARRAY_WITH_RESET_FN(voltageSensorADCConfig_t, MAX_VOLTAGE_SENSOR_ADC, voltageSensorADCConfig, PG_VOLTAGE_SENSOR_ADC_CONFIG, 0);
 
+// Per-sensor calibration overrides for legacy targets (fall back to the generic defaults)
+#ifndef VBAT_SCALE_DEFAULT
+#define VBAT_SCALE_DEFAULT VOLTAGE_SCALE_DEFAULT
+#endif
+#ifndef VBAT_DIVIDER_DEFAULT
+#define VBAT_DIVIDER_DEFAULT VOLTAGE_DIVIDER_DEFAULT
+#endif
+#ifndef VBEC_SCALE_DEFAULT
+#define VBEC_SCALE_DEFAULT VOLTAGE_SCALE_DEFAULT
+#endif
+#ifndef VBEC_DIVIDER_DEFAULT
+#define VBEC_DIVIDER_DEFAULT VOLTAGE_DIVIDER_DEFAULT
+#endif
+#ifndef VBUS_SCALE_DEFAULT
+#define VBUS_SCALE_DEFAULT VOLTAGE_SCALE_DEFAULT
+#endif
+#ifndef VBUS_DIVIDER_DEFAULT
+#define VBUS_DIVIDER_DEFAULT VOLTAGE_DIVIDER_DEFAULT
+#endif
+
+static const uint16_t voltageSensorScaleDefault[MAX_VOLTAGE_SENSOR_ADC] = {
+    [VOLTAGE_SENSOR_ADC_BAT] = VBAT_SCALE_DEFAULT,
+    [VOLTAGE_SENSOR_ADC_BEC] = VBEC_SCALE_DEFAULT,
+    [VOLTAGE_SENSOR_ADC_BUS] = VBUS_SCALE_DEFAULT,
+    [VOLTAGE_SENSOR_ADC_EXT] = VOLTAGE_SCALE_DEFAULT,
+};
+
+static const uint16_t voltageSensorDividerDefault[MAX_VOLTAGE_SENSOR_ADC] = {
+    [VOLTAGE_SENSOR_ADC_BAT] = VBAT_DIVIDER_DEFAULT,
+    [VOLTAGE_SENSOR_ADC_BEC] = VBEC_DIVIDER_DEFAULT,
+    [VOLTAGE_SENSOR_ADC_BUS] = VBUS_DIVIDER_DEFAULT,
+    [VOLTAGE_SENSOR_ADC_EXT] = VOLTAGE_DIVIDER_DEFAULT,
+};
+
 void pgResetFn_voltageSensorADCConfig(voltageSensorADCConfig_t *instance)
 {
     for (int i = 0; i < MAX_VOLTAGE_SENSOR_ADC; i++) {
@@ -52,6 +86,8 @@ void pgResetFn_voltageSensorADCConfig(voltageSensorADCConfig_t *instance)
             .divmul = VOLTAGE_MULTIPLIER_DEFAULT,
             .cutoff = VOLTAGE_CUTOFF_DEFAULT,
         );
+        instance[i].scale = voltageSensorScaleDefault[i];
+        instance[i].divider = voltageSensorDividerDefault[i];
     }
 }
 

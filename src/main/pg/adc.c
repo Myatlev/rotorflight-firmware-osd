@@ -67,6 +67,22 @@ void pgResetFn_adcConfig(adcConfig_t *adcConfig)
 #endif
 #endif
 
+#ifdef VBEC_ADC_PIN
+    adcConfig->vbec.enabled = true;
+    adcConfig->vbec.ioTag = IO_TAG(VBEC_ADC_PIN);
+#if defined(STM32H7)
+    adcConfig->vbec.device = adcConfig->device;
+#endif
+#endif
+
+#ifdef VBUS_ADC_PIN
+    adcConfig->vbus.enabled = true;
+    adcConfig->vbus.ioTag = IO_TAG(VBUS_ADC_PIN);
+#if defined(STM32H7)
+    adcConfig->vbus.device = adcConfig->device;
+#endif
+#endif
+
 #ifdef EXTERNAL1_ADC_PIN
     adcConfig->vext.enabled = true;
     adcConfig->vext.ioTag = IO_TAG(EXTERNAL1_ADC_PIN);
