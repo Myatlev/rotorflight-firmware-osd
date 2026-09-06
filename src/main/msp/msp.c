@@ -708,6 +708,8 @@ static bool mspCommonProcessOutCommand(int16_t cmdMSP, sbuf_t *dst, mspPostProce
         sbufWriteU8(dst, strlen(value));
         sbufWriteString(dst, value);
 #else
+        // board name, board design, manufacturer id — all empty
+        sbufWriteU8(dst, 0);
         sbufWriteU8(dst, 0);
         sbufWriteU8(dst, 0);
 #endif
@@ -952,8 +954,8 @@ static bool mspCommonProcessOutCommand(int16_t cmdMSP, sbuf_t *dst, mspPostProce
 #endif
         sbufWriteU8(dst, osdFlags);
 
-#ifdef USE_MAX7456
-        // send video system (AUTO/PAL/NTSC)
+#if defined(USE_MAX7456) || defined(USE_MSP_DISPLAYPORT)
+        // send video system (AUTO/PAL/NTSC/HD)
         sbufWriteU8(dst, vcdProfile()->video_system);
 #else
         sbufWriteU8(dst, 0);
@@ -3762,7 +3764,7 @@ static mspResult_e mspProcessInCommand(mspDescriptor_t srcDesc, int16_t cmdMSP, 
         break;
 
     case MSP_SET_OSD_CANVAS:
-#ifdef USE_OSD_HD
+#if defined(USE_OSD) && defined(USE_OSD_HD)
         {
             osdConfigMutable()->canvas_cols = sbufReadU8(src);
             osdConfigMutable()->canvas_rows = sbufReadU8(src);
@@ -3975,7 +3977,7 @@ static mspResult_e mspCommonProcessInCommand(mspDescriptor_t srcDesc, int16_t cm
 
             if ((int8_t)addr == -1) {
                 /* Set general OSD settings */
-#ifdef USE_MAX7456
+#if defined(USE_MAX7456) || defined(USE_MSP_DISPLAYPORT)
                 vcdProfileMutable()->video_system = sbufReadU8(src);
 #else
                 sbufReadU8(src); // Skip video system

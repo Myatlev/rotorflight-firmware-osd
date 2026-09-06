@@ -21,6 +21,15 @@
 #pragma once
 
 /*
+ * STM32F7X2_OSD — alt target of STM32F7X2 (same unified pin/config mechanism,
+ * same custom-defaults flow) with the digital HD OSD (MSP DisplayPort) enabled
+ * and a set of unneeded features trimmed to fit the 480 KB flash.
+ */
+#if defined(STM32F7X2_OSD) && !defined(STM32F7X2)
+#define STM32F7X2
+#endif
+
+/*
  * Common definitions for all STM32 targets
  */
 
@@ -306,7 +315,59 @@
 #define CURRENT_TASK_FREQ_HZ     200
 #define ESC_SENSOR_TASK_FREQ_HZ  200
 
+#if defined(STM32F7X2_OSD)
+
+#undef  USBD_PRODUCT_STRING
+#define USBD_PRODUCT_STRING     "Rotorflight STM32F7x2 OSD"
+
+#define DEFAULT_FEATURES         (FEATURE_DYN_NOTCH | FEATURE_OSD)
+
+// Digital OSD only: MSP DisplayPort (DJI). No analog MAX7456.
+#define USE_OSD
+
+// Flash budget trim — hardware/protocols a Nexus-XR class heli FC does not carry.
+#undef USE_SDCARD
+#undef USE_SDCARD_SPI
+#undef USE_SDCARD_SDIO
+#undef USE_MULTI_GYRO
+#undef USE_MAG
+#undef USE_MAG_DATA_READY_SIGNAL
+#undef USE_MAG_HMC5883
+#undef USE_MAG_SPI_HMC5883
+#undef USE_MAG_QMC5883
+#undef USE_MAG_LIS3MDL
+#undef USE_MAG_AK8963
+#undef USE_MAG_SPI_AK8963
+#undef USE_MAG_AK8975
+#undef USE_MAG_MPU925X_AK8963
+#undef USE_LED_STRIP
+#undef USE_RANGEFINDER
+#undef USE_RANGEFINDER_HCSR04
+#undef USE_RANGEFINDER_TF
+#undef USE_DASHBOARD
+#undef USE_TELEMETRY_MAVLINK
+#undef USE_TELEMETRY_JETIEXBUS
+#undef USE_TELEMETRY_HOTT
+#undef USE_TELEMETRY_LTM
+#undef USE_SERIALRX_JETIEXBUS
+#undef USE_HOTT_TEXTMODE
+#undef USE_SPEKTRUM_BIND
+#undef USE_SPEKTRUM_BIND_PLUG
+#undef USE_SPEKTRUM_REAL_RSSI
+#undef USE_SPEKTRUM_FAKE_RSSI
+#undef USE_SPEKTRUM_RSSI_PERCENT_CONVERSION
+#undef USE_SPEKTRUM_VTX_CONTROL
+#undef USE_SPEKTRUM_VTX_TELEMETRY
+#undef USE_SPEKTRUM_CMS_TELEMETRY
+#undef USE_OSD_STICK_OVERLAY
+#undef USE_EXTENDED_CMS_MENUS
+#undef USE_CMS_FAILSAFE_MENU
+
+#else
+
 #define DEFAULT_FEATURES         (FEATURE_DYN_NOTCH)
+
+#endif // STM32F7X2_OSD
 
 
 /*
